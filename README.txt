@@ -1,1 +1,1 @@
-This repository stores the complementary material of the paper (PONER TITULO PAPER DEL RJournal). 
+This repository stores the complementary material of the article enttitled Bayesian Inference for Multivariate Spatial Models with INLA by Francisco Palmí Perales, Virgilio Gómez Rubio, Roger S Bivand, Michela Cameletti and Havard Rue.
