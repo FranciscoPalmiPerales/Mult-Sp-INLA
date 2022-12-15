@@ -2,8 +2,8 @@
 ############ Multivariate disease mapping analysis using R-INLA ##############
 ##############################################################################
 
-# In this script, a multivariate disease mapping analysis is performmed. Cases
-# of three different diseases are considered: Bucal cavity, Eshopgaus and 
+# In this script, a multivariate disease mapping analysis is performed. Cases
+# of three different diseases are considered: Bucal cavity, Esophagus and 
 # Stomach cancer in Spain per provinces. The data can be found in: 
 # https://github.com/becarioprecario/INLAMCMC_spatial_examples/tree/master/dismap_example
 
@@ -105,7 +105,7 @@ gre <- colorRampPalette(gre)(20)[5:20]
 
 
 # Plot the shared sp effect
-png(file = "Plots/Spain_Shared.png", width = 360, height = 360)
+png(file = "Spain_Shared.png", width = 360, height = 360)
 print(
   spplot(OyE.sim, c("Shared"), main = c("Shared effect"),
     col.regions = pur)
@@ -113,7 +113,7 @@ print(
 dev.off()
 
 # Plot the specific esophagus effect
-png(file = "Plots/Spain_Esophagus_Specific.png", width = 360, height = 360)
+png(file = "Spain_Esophagus_Specific.png", width = 360, height = 360)
 print(
   spplot(OyE.sim, c("Spatial2"),
     main = c("Esophagus specific effect"),
@@ -123,7 +123,7 @@ dev.off()
 
 
 #Plot the specific stomach effect
-png(file = "Plots/Spain_Stomach_specific.png", width = 360, height = 360)
+png(file = "Spain_Stomach_specific.png", width = 360, height = 360)
 print(
   spplot(OyE.sim, c("Spatial3"),
     main = c("Stomach specific effect"),
@@ -132,15 +132,15 @@ print(
 dev.off()
 
 
-# #Plot the shared and specific effects (All together)
-# pdf(file = "spain_estimates.pdf", width = 12, height = 6)
-# print(spplot(OyE.sim, c("Shared", "Spatial2", "Spatial3"),
-#              names.attr = c("Shared", "Esophagus specific", "Stomach specific"),
-#              col.regions = rev(gray(0:20/20)[2+1:16])))
-# dev.off()
+#Plot the shared and specific effects (All together)
+pdf(file = "spain_estimates.pdf", width = 12, height = 6)
+print(spplot(OyE.sim, c("Shared", "Spatial2", "Spatial3"),
+            names.attr = c("Shared", "Esophagus specific", "Stomach specific"),
+            col.regions = rev(gray(0:20/20)[2+1:16])))
+dev.off()
 
 # Save results 
-save.image("SavedData/Lattice_Dataset_res.RData")
+save.image("Lattice_Dataset_res.RData")
 
 #Time difference 
 t2 - t1

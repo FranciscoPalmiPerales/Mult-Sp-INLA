@@ -13,6 +13,7 @@ library(maptools)
 library(RColorBrewer)
 library(gstat)
 library(inlabru)
+library(ggplot2)
 
 # Load the data
 data(meuse); 
@@ -26,7 +27,7 @@ proj4string(meuse) <- CRS("+init=epsg:28992")
 
 ##  Create the mesh for the INLA analysis
 
-# Create grid
+# Create a grid
 data(meuse.grid)
 coordinates(meuse.grid) <- ~x+y
 proj4string(meuse.grid) <- CRS("+init=epsg:28992")
@@ -53,7 +54,7 @@ mesh<- inla.mesh.2d(
 
 
 # Plot the mesh and the data 
-png(file = "Plots/meuse_Only2_mesh.png", width =720, height = 360)
+png(file = "meuse_Only2_mesh.png", width =720, height = 360)
 multiplot(
   ggplot() + gg(mesh) + labs(title = "Mesh" ) +
     gg(meuse.bdy, col="darkgreen", size=1) + coord_fixed(ratio = 1),
@@ -102,7 +103,7 @@ stk.lead <- inla.stack(
       dist.lead = meuse$dist)),
   tag = "Lead")
 
-# Create the stack object for the copper
+# Create the stack object for the zinc
 stk.zinc <- inla.stack(
   data = list(log.y = cbind(NA, as.vector(y2[, 1]))),
   A = list(A.m, A.m, 1),
@@ -131,7 +132,7 @@ stk.lead.pr <- inla.stack(
       dist.lead = meuse.grid$dist)),
   tag = "Lead.pred")
 
-# Build predicting stack for the copper
+# Build predicting stack for the zinc
 stk.zinc.pr <- inla.stack(
   data = list(log.y = cbind(NA, as.vector(y6[, 1]))),
   A = list(A.pr, A.pr, 1),
@@ -150,7 +151,7 @@ stk.shared <- inla.stack(
   effects = list(spatial.field.lead = 1:spde$n.spde),
   tag = "Shared")
 
-# Stack for the specific sp effect copper
+# Stack for the specific sp effect zinc
 stk.zinc.spec <- inla.stack(
   data = list(log.y = cbind(NA, as.vector(y6[, 1]))),
   A = list(A.pr),
@@ -231,7 +232,7 @@ meuse.grid$zinc.spec <- meuse.res$summary.fitted.values[idx.zinc.spec, "mean"]
 
 
 # Plot the posterior estimated mean of the lead intensity
-png(file = "Plots/Meuse_lead_estimate.png")
+png(file = "Meuse_lead_estimate.png")
 print(
   spplot(meuse.grid, c("lead.pr"), 
          col.regions = c(blu), 
@@ -240,7 +241,7 @@ print(
 dev.off()
 
 # Plot the posterior estimated mean of the zinc intensity
-png(file = "Plots/Meuse_zinc_estimate.png")
+png(file = "Meuse_zinc_estimate.png")
 print(
   spplot(meuse.grid, c("zinc.pr"), 
          col.regions = c(gre), 
@@ -249,7 +250,7 @@ print(
 dev.off()
 
 # Plot the shared sp effect
-png(file = "Plots/Meuse_Shared_effect.png")
+png(file = "Meuse_Shared_effect.png")
 print(
   spplot(meuse.grid, c("shared"), 
          col.regions = grn, 
@@ -258,7 +259,7 @@ print(
 dev.off()
 
 # Plot the zinc specific effect
-png(file = "Plots/Meuse_Zinc_specific.png")
+png(file = "Meuse_Zinc_specific.png")
 print(
   spplot(meuse.grid, c("zinc.spec"), 
          col.regions = ora, 
@@ -267,7 +268,7 @@ print(
 dev.off()
 
 # Save results
-save.image("SavedData/Meuse_2m_res.RData")
+save.image("Meuse_2m_res.RData")
 
 # Time difference
 t2 - t1

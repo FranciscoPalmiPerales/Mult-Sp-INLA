@@ -78,7 +78,7 @@ mesh <- inla.mesh.2d(
 nv <- mesh$n
 
 # Plot the mesh and the data 
-png(file = "Plots/clmfires_mesh.png", width =960, height = 720)
+png(file = "clmfires_mesh.png", width =960, height = 720)
 multiplot(
   ggplot() + gg(mesh) + labs(title = "Mesh" ) +
     gg(bdy.SP, col="darkgreen") + coord_fixed(ratio = 1),
@@ -386,17 +386,17 @@ com.sc <- seq(0, 1.5, 0.1)
 
 # Create palletes 
 blu <- brewer.pal(9, "Blues")
-blu <- colorRampPalette(blu)(length(com.sc)-1)
+blu <- colorRampPalette(blu)(length(com.sc))
 ora <- brewer.pal(9, "Oranges")
-ora <- colorRampPalette(ora)(length(com.sc)-1)
+ora <- colorRampPalette(ora)(length(com.sc))
 pur <- brewer.pal(9, "Purples")
 pur <- colorRampPalette(pur)(20)
 reds <- brewer.pal(9, "Reds")
-reds <- colorRampPalette(reds)(length(com.sc)-1)
+reds <- colorRampPalette(reds)(length(com.sc))
 grn <- brewer.pal(9, "Greens")
 grn <- colorRampPalette(grn)(20)
 gre <- brewer.pal(9, "Greys")
-gre <- colorRampPalette(gre)(length(com.sc)-1)
+gre <- colorRampPalette(gre)(length(com.sc))
 
 
 
@@ -421,7 +421,7 @@ print(
 dev.off()
 
 # Plot the posterior mean of the intensity of lightning fires
-png(file = "Plots/CLMFires_lightning.png")
+png(file = "CLMFires_lightning.png")
 print(
   spplot(grid.pr, c("lig.pr"), 
          at=com.sc,
@@ -431,7 +431,7 @@ print(
 dev.off()
 
 # Plot the posterior mean of the intensity of accidental fires
-png(file = "Plots/CLMFires_accidental.png")
+png(file = "CLMFires_accidental.png")
 print(
   spplot(grid.pr, c("acc.pr"),  
          at=com.sc,
@@ -441,7 +441,7 @@ print(
 dev.off()
 
 # Plot the posterior mean of the intensity of intentional fires
-png(file = "Plots/CLMFires_intentional.png")
+png(file = "CLMFires_intentional.png")
 print(
   spplot(grid.pr, c("int.pr"),  
          at=com.sc,
@@ -452,7 +452,7 @@ dev.off()
 
 
 # Plot the posterior mean of the intensity of other fires
-png(file = "Plots/CLMFires_other.png")
+png(file = "CLMFires_other.png")
 print(
   spplot(grid.pr, c("oth.pr"),  
          at=com.sc,
@@ -465,7 +465,7 @@ dev.off()
 
 
 # Plot the posterior mean of the shared effect
-png(file = "Plots/CLMFires_shared.png")
+png(file = "CLMFires_shared.png")
 print(
   spplot(grid.pr, c("shared"), 
          col.regions = grn, 
@@ -474,7 +474,7 @@ print(
 dev.off()
 
 # Plot  the specific effect accidental fires
-png(file = "Plots/CLMFires_acc_specific.png")
+png(file = "CLMFires_acc_specific.png")
 print(
   spplot(grid.pr, c("acc.spec"), 
          col.regions = ora, 
@@ -483,7 +483,7 @@ print(
 dev.off()
 
 # Plot the specific effect intentional fires
-png(file = "Plots/CLMFires_int_specific.png")
+png(file = "CLMFires_int_specific.png")
 print(
   spplot(grid.pr, c("int.spec"), 
          col.regions = reds, 
@@ -492,7 +492,7 @@ print(
 dev.off()
 
 # Plot the specific effect other fires
-png(file = "Plots/CLMFires_Other_specific.png")
+png(file = "CLMFires_Other_specific.png")
 print(
   spplot(grid.pr, c("oth.spec"), 
          col.regions = gre, 
@@ -501,7 +501,7 @@ print(
 dev.off()
 
 # Save results 
-save.image("SavedData/CLMFires_res_10.RData")
+save.image("CLMFires_res_10.RData")
 
 #Time difference 
 t2 - t1
