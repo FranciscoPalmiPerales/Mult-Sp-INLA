@@ -6,7 +6,7 @@ Specifically, you will find four archives:
   2. Mult-lattie.R --> In this archive you will find the code for the lattice data example of the article. 
   3. Mult-ppp.R --> In this archive you will find the code for the point patterns example of the article. 
   4. dismap_sim_data.RData --> The data needed to reproduce the multivariate lattice example. 
-  5. README.txt --> The archive you are reading. 
+  5. README.txt --> The file you are reading. 
   
   Thanks for reading. 
   
