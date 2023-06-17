@@ -12,6 +12,7 @@
 library(INLA)
 library(spdep)
 library(RColorBrewer)
+source("utils.R")
 
 # Load data from:
 load("dismap_sim_data.RData")
@@ -24,12 +25,7 @@ names(OyE.sim)[1:6] <- c("Obs.Cb", "Esp.Cb", "Obs.Eso",
 
 # Create a dataset for INLA (n x 3)
 n <- nrow(OyE.sim)
-d <- list(OBS = matrix(NA, nrow = n*3, ncol = 3))
-
-# Add observed
-d$OBS[1:n, 1] <- OyE.sim$Obs.Cb #Bucal cancer
-d$OBS[n + 1:n, 2] <- OyE.sim$Obs.Eso #Esophagous cancer
-d$OBS[2*n + 1:n, 3] <- OyE.sim$Obs.Est #Stomach cancer
+d <- list(OBS = create_multivariate_data(as.data.frame(OyE.sim)[, c("Obs.Cb", "Obs.Eso", "Obs.Est")]))
 
 # Expected cases
 d$EXP <- c(OyE.sim$Esp.Cb, OyE.sim$Esp.Eso, OyE.sim$Esp.Est)
@@ -103,12 +99,14 @@ pur <- colorRampPalette(pur)(20)
 gre <- brewer.pal(9, "Greys")
 gre <- colorRampPalette(gre)(20)[5:20]
 
+#'at' values
+at.values <- seq(-0.45,0.45, length.out = 20)
 
 # Plot the shared sp effect
 png(file = "Spain_Shared.png", width = 360, height = 360)
 print(
   spplot(OyE.sim, c("Shared"), main = c("Shared effect"),
-    col.regions = pur)
+    col.regions = pur, at = at.values)
   )
 dev.off()
 
@@ -117,7 +115,7 @@ png(file = "Spain_Esophagus_Specific.png", width = 360, height = 360)
 print(
   spplot(OyE.sim, c("Spatial2"),
     main = c("Esophagus specific effect"),
-    col.regions = pin)
+    col.regions = pin, at = at.values)
   )
 dev.off()
 
@@ -127,7 +125,7 @@ png(file = "Spain_Stomach_specific.png", width = 360, height = 360)
 print(
   spplot(OyE.sim, c("Spatial3"),
     main = c("Stomach specific effect"),
-    col.regions = blu)
+    col.regions = blu,  at = at.values)
   )
 dev.off()
 
@@ -136,7 +134,8 @@ dev.off()
 pdf(file = "spain_estimates.pdf", width = 12, height = 6)
 print(spplot(OyE.sim, c("Shared", "Spatial2", "Spatial3"),
             names.attr = c("Shared", "Esophagus specific", "Stomach specific"),
-            col.regions = rev(gray(0:20/20)[2+1:16])))
+            col.regions = rev(gray(0:20/20)[2+1:16])),
+  at = seq(-0.45,0.45, length.out = 16))
 dev.off()
 
 # Save results 

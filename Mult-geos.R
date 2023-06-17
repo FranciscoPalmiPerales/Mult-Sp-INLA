@@ -87,15 +87,9 @@ spde <- inla.spde2.pcmatern(
 # Create the projector matrix 
 A.m <- inla.spde.make.A(mesh= mesh, loc = coordinates(meuse))
 
-# Prepare the stack data
-y1 <- log(meuse@data["lead"]);    names(y1) <- "y.1"
-y2 <- log(meuse@data["zinc"]);    names(y2) <- "y.2"
-
-
-
 # Create the stack object for the cadmium
 stk.lead <- inla.stack(
-  data = list(log.y = cbind(y1[,1], NA)),
+  data = list(log.y = cbind(log(meuse$lead), NA)),
   A = list(A.m, 1),
   effects = list(
     spatial.field.lead = 1:spde$n.spde,
@@ -105,7 +99,7 @@ stk.lead <- inla.stack(
 
 # Create the stack object for the zinc
 stk.zinc <- inla.stack(
-  data = list(log.y = cbind(NA, as.vector(y2[, 1]))),
+  data = list(log.y = cbind(NA, log(meuse$zinc))),
   A = list(A.m, A.m, 1),
   effects = list(
     spatial.field.zinc = 1:spde$n.spde, 
@@ -119,12 +113,11 @@ stk.zinc <- inla.stack(
 A.pr <- inla.spde.make.A(mesh= mesh, loc = coordinates(meuse.grid))
 
 # Prepare the data for the prediction
-y5 <- matrix(NA, ncol= 1, nrow = nrow(meuse.grid) ) 
-y6 <- matrix(NA, ncol= 1, nrow = nrow(meuse.grid) )
+y.pred <- matrix(NA, nrow = nrow(meuse.grid), ncol = 2)
 
 # Build predicting stack for the cadmium
 stk.lead.pr <- inla.stack(
-  data = list(log.y = cbind(as.vector(y5[, 1]), NA)),
+  data = list(log.y = y.pred),
   A = list(A.pr, 1),
   effects = list(
     spatial.field.lead = 1:spde$n.spde,
@@ -134,7 +127,7 @@ stk.lead.pr <- inla.stack(
 
 # Build predicting stack for the zinc
 stk.zinc.pr <- inla.stack(
-  data = list(log.y = cbind(NA, as.vector(y6[, 1]))),
+  data = list(log.y = y.pred),
   A = list(A.pr, A.pr, 1),
   effects = list(
     spatial.field.zinc = 1:spde$n.spde, 
@@ -146,14 +139,14 @@ stk.zinc.pr <- inla.stack(
 
 # Stack for the shared effect
 stk.shared <- inla.stack(
-  data = list(log.y = cbind(as.vector(y5[, 1]), NA)),
+  data = list(log.y = y.pred),
   A = list(A.pr),
   effects = list(spatial.field.lead = 1:spde$n.spde),
   tag = "Shared")
 
 # Stack for the specific sp effect zinc
 stk.zinc.spec <- inla.stack(
-  data = list(log.y = cbind(NA, as.vector(y6[, 1]))),
+  data = list(log.y = y.pred),
   A = list(A.pr),
   effects = list(spatial.field.zinc = 1:spde$n.spde),
   tag = "Zinc.spec")

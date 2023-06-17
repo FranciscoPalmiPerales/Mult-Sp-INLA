@@ -123,12 +123,11 @@ s.index.oth <-
 
 # The following lines calculate the area of the mesh 
 # using the Voronoi tesselation
-require(deldir)
+library(deldir)
 dd = deldir(mesh$loc[, 1],mesh$loc[, 2])
 # Create a list of tiles in a tessellation
 mytiles = tile.list(dd)
 
-if (!require(gpclib)) install.packages("gpclib", type = "source")
 pl.study = as(bdy, "gpc.poly") # Class for polygons
 area.poly(pl.study) # Computing the area of the whole polygon
 
@@ -144,7 +143,7 @@ w = unlist(lapply(mytiles,
 sum(w)
 
 
-# Data for the stack function: lighting fires
+# Data for the stack function: lightning fires
 e.lig <- c(w, rep(0, n.lig))
 y.lig <- matrix(NA, nrow = nv + n.lig, ncol = n.pp)
 y.lig[, 1] <- rep(0:1, c(nv, n.lig))
@@ -185,7 +184,7 @@ stk.lig <- inla.stack(
   data = list(y = y.lig, e = e.lig),
   A = list(A.lig, 1),
   effects = list(spatial.field.lig = s.index.lig, 
-    data.frame(Intercept.lig = rep(1, dim(A.lig)[1])) 
+    data.frame(Intercept.lig = rep(1, nrow(A.lig))) 
     ),
   tag = "Lighting")
 
@@ -197,7 +196,7 @@ stk.acc <- inla.stack(
   effects = list(
     base.copy.acc = 1:nv, 
     spatial.field.acc = s.index.acc, 
-    data.frame(Intercept.acc = rep(1, dim(A.acc)[1]))
+    data.frame(Intercept.acc = rep(1, nrow(A.acc)))
     ),
   tag = "Accidental")
 
@@ -208,7 +207,7 @@ stk.int <- inla.stack(
   effects = list(
     base.copy.int = 1:nv, 
     spatial.field.int = s.index.int, 
-    data.frame(Intercept.int = rep(1, dim(A.int)[1]))),
+    data.frame(Intercept.int = rep(1, nrow(A.int)))),
   tag = "Intentional")
 
 # Create the stack for the other fires
@@ -218,7 +217,7 @@ stk.oth <- inla.stack(
   effects = list(
     base.copy.oth = 1:nv, 
     spatial.field.oth = s.index.oth, 
-    data.frame(Intercept.oth = rep(1, dim(A.oth)[1]))),
+    data.frame(Intercept.oth = rep(1, nrow(A.oth)))),
   tag = "Other")
 
 
@@ -243,73 +242,73 @@ points(pts.oth, col = "darkmagenta")
 
 # Build projector matrix for prediction
 A.pr <- inla.spde.make.A(mesh = mesh, loc = coordinates(grid.pr))
-
-
+n.pr <- nrow(A.pr)
+n.grid.pr <- nrow(grid.pr)
 
 # Stack for predicting log intensity lighting fires
 stk.lig.pr <- inla.stack(
-  data = list(y = matrix(NA, nrow = nrow(coordinates(grid.pr)), ncol = n.pp)),
+  data = list(y = matrix(NA, nrow = n.grid.pr, ncol = n.pp)),
   A = list(A.pr, 1),
   effects = list(spatial.field.lig = s.index.lig,
-    data.frame(Intercept.lig = rep(1, dim(A.pr)[1]))),
+    data.frame(Intercept.lig = rep(1, n.pr))),
   tag = "Lig.pred")
 
 
 # Stack for predicting log intensity accidental fires
 stk.acc.pr <- inla.stack(
-  data = list(y = matrix(NA, nrow = nrow(coordinates(grid.pr)), ncol = n.pp)),
+  data = list(y = matrix(NA, nrow = n.grid.pr, ncol = n.pp)),
   A = list(A.pr, A.pr, 1),
   effects = list(
     base.copy.acc = 1:nv, 
     spatial.field.acc = s.index.acc,
-    data.frame(Intercept.acc = rep(1, dim(A.pr)[1]))),
+    data.frame(Intercept.acc = rep(1, n.pr))),
   tag = "Acc.pred")
 
 # Stack for predicting log intensity intentional fires
 stk.int.pr <- inla.stack(
-  data = list(y = matrix(NA, nrow = nrow(coordinates(grid.pr)), ncol = n.pp)),
+  data = list(y = matrix(NA, nrow = n.grid.pr, ncol = n.pp)),
   A = list(A.pr, A.pr, 1),
   effects = list(
     base.copy.int = 1:nv, 
     spatial.field.int = s.index.int,
-    data.frame(Intercept.int = rep(1, dim(A.pr)[1]))),
+    data.frame(Intercept.int = rep(1, n.pr))),
   tag = "Int.pred")
 
 # Stack for predicting log intensity other fires
 stk.oth.pr <- inla.stack(
-  data = list(y = matrix(NA, nrow = nrow(coordinates(grid.pr)), ncol = n.pp)),
+  data = list(y = matrix(NA, nrow = n.grid.pr, ncol = n.pp)),
   A = list(A.pr, A.pr, 1),
   effects = list(
     base.copy.oth = 1:nv, 
     spatial.field.oth = s.index.oth,
-    data.frame(Intercept.oth = rep(1, dim(A.pr)[1]))),
+    data.frame(Intercept.oth = rep(1, n.pr))),
   tag = "Oth.pred")
 
 
 # Stack with shared effect
 stk.shared <- inla.stack(
-  data = list(y = matrix(NA, nrow = nrow(coordinates(grid.pr)), ncol = n.pp)),
+  data = list(y = matrix(NA, nrow = n.grid.pr, ncol = n.pp)),
   A = list(A.pr),
   effects = list(spatial.field.lig = s.index.lig),
   tag = "shared")
 
 # Specific spatial effect accidental fires
 stk.acc.spec <- inla.stack(
-  data = list(y = matrix(NA, nrow = nrow(coordinates(grid.pr)), ncol = n.pp)),
+  data = list(y = matrix(NA, nrow = n.grid.pr, ncol = n.pp)),
   A = list(A.pr),
   effects = list(spatial.field.acc = s.index.acc),
   tag = "Acc.spec")
 
 # Specific spatial effect intentional fires
 stk.int.spec <- inla.stack(
-  data = list(y = matrix(NA, nrow = nrow(coordinates(grid.pr)), ncol = n.pp)),
+  data = list(y = matrix(NA, nrow = n.grid.pr, ncol = n.pp)),
   A = list(A.pr),
   effects = list(spatial.field.int = s.index.int),
   tag = "Int.spec")
 
 # Specific spatial effect other fires
 stk.oth.spec <- inla.stack(
-  data = list(y = matrix(NA, nrow = nrow(coordinates(grid.pr)), ncol = n.pp)),
+  data = list(y = matrix(NA, nrow = n.grid.pr, ncol = n.pp)),
   A = list(A.pr),
   effects = list(spatial.field.oth = s.index.oth),
   tag = "Oth.spec")
@@ -364,21 +363,28 @@ grid.pr$int.pr <- pp.res$summary.fitted.values[idx.int, "mean"]
 idx.oth <- inla.stack.index(join.stack, 'Oth.pred')$data
 grid.pr$oth.pr <- pp.res$summary.fitted.values[idx.oth, "mean"]
 
+#-- Estimates of the LOG-intensity so that the actual effects are plotted
+#   and not exp(effect).
+
 # Extract the estimates of the shared spatial effect
 idx.shared <- inla.stack.index(join.stack, 'shared')$data
-grid.pr$shared <- pp.res$summary.fitted.values[idx.shared, "mean"]
+#grid.pr$shared <- pp.res$summary.fitted.values[idx.shared, "mean"]
+grid.pr$shared <- pp.res$summary.linear.predictor[idx.shared, "mean"]
 
 # Extract the estimates of the specific accidental
 idx.acc.spec <- inla.stack.index(join.stack, 'Acc.spec')$data
-grid.pr$acc.spec <- pp.res$summary.fitted.values[idx.acc.spec, "mean"]
+#grid.pr$acc.spec <- pp.res$summary.fitted.values[idx.acc.spec, "mean"]
+grid.pr$acc.spec <- pp.res$summary.linear.predictor[idx.acc.spec, "mean"]
 
 # Extract the estimates of the specific intentional
 idx.int.spec <- inla.stack.index(join.stack, 'Int.spec')$data
-grid.pr$int.spec <- pp.res$summary.fitted.values[idx.int.spec, "mean"]
+#grid.pr$int.spec <- pp.res$summary.fitted.values[idx.int.spec, "mean"]
+grid.pr$int.spec <- pp.res$summary.linear.predictor[idx.int.spec, "mean"]
 
 # Extract the estimates of the specific other
 idx.oth.spec <- inla.stack.index(join.stack, 'Oth.spec')$data
-grid.pr$oth.spec <- pp.res$summary.fitted.values[idx.oth.spec, "mean"]
+#grid.pr$oth.spec <- pp.res$summary.fitted.values[idx.oth.spec, "mean"]
+grid.pr$oth.spec <- pp.res$summary.linear.predictor[idx.oth.spec, "mean"]
 
 
 #Common scale for the posterior estimates of the different intensities
